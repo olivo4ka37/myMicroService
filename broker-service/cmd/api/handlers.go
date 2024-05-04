@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -17,10 +18,10 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 		Message: "Hit the broker",
 	}
 
-	out, _ := json.MarshalIndent(payload, "", ":\t")
-	//if err != nil {
-	//	return fmt.Errorf("Error while read json in broker-service/cmd/api/handlers.go ", err)
-	//}
+	out, err := json.MarshalIndent(payload, "", "\t")
+	if err != nil {
+		fmt.Errorf("Error while read json in broker-service/cmd/api/handlers.go ", err)
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	w.Write(out)
