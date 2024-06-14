@@ -7,12 +7,14 @@ import (
 	"net/http"
 )
 
+// jsonResponse структура запроса джейсон файла, нужна для получения информации о JSON запросе.
 type jsonResponse struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
+// readJSON Функция читающая JSON файл, возвращает nil если нет ошибок.
 func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // one megabyte
 
