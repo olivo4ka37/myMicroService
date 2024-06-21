@@ -27,7 +27,7 @@ services:
     image: 'postgres:14.0'
     ports:
       - "5040:5432"
-    restart: on-failure #Поставил на failure так как сам включается когда не нужно, обычно есть смысл ставить always
+    restart: always #Поставил на failure так как сам включается когда не нужно, обычно есть смысл ставить always
     deploy:
       mode: replicated
       replicas: 1
