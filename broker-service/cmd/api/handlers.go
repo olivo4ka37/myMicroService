@@ -50,10 +50,10 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayLoad) {
-	// Создаем json файл который мы отправим в authenticate микросервис
+	// Create a json file that we send to authenticate service
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
-	// Вызываем микросервис
+	// Make request to auth service (like a ping)
 	request, err := http.NewRequest("POST", "http://authentication-service/authenticate", bytes.NewBuffer(jsonData))
 	if err != nil {
 		app.errorJSON(w, err)
@@ -68,7 +68,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayLoad) {
 	}
 	defer response.Body.Close()
 
-	// Убедиться в успешном отправлении запроса (получить status code)
+	// Check  the status cofe of our request
 	if response.StatusCode == http.StatusUnauthorized {
 		app.errorJSON(w, errors.New("invalid credential"))
 		return
@@ -77,10 +77,9 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayLoad) {
 		return
 	}
 
-	// Переменная из которой будем читать тело запроса
 	var jsonFromService jsonResponse
 
-	// Декодирование JSON из authentication-service
+	// Decode JSON from authentication-service
 	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
 	if err != nil {
 		app.errorJSON(w, err)
