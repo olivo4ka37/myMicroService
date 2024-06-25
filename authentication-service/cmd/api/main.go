@@ -62,8 +62,7 @@ func openDB(dsn string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	// Вместо err можно использовать nil
-	return db, err
+	return db, nil
 }
 
 func connectToDB() *sql.DB {
@@ -75,7 +74,7 @@ func connectToDB() *sql.DB {
 			log.Println("Postgres not yet ready ...")
 			counts++
 		} else {
-			log.Println("Connected to postgres YOPTA!")
+			log.Println("Connected to postgres (YOPTA)!")
 			return connection
 		}
 
@@ -84,7 +83,7 @@ func connectToDB() *sql.DB {
 			return nil
 		}
 
-		log.Println("Backing off (Чилим) 2 seconds")
+		log.Println("Backing off (Chill) 2 seconds")
 		time.Sleep(time.Second * 2)
 		continue
 	}
