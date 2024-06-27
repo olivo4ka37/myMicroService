@@ -3,9 +3,18 @@ services:
     build:
       context: ../broker-service
       dockerfile: ../broker-service/broker-service.dockerfile
-    restart: on-failure #Поставил на failure так как сам включается когда не нужно, обычно есть смысл ставить always
+    restart: always
     ports:
       - "8080:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  logger-service:
+    build:
+      context: ../logger-service
+      dockerfile: ../logger-service/logger-service.dockerfile
+    restart: always
     deploy:
       mode: replicated
       replicas: 1
@@ -14,7 +23,7 @@ services:
     build:
       context: ./../authentication-service
       dockerfile: ./../authentication-service/authentication-service.dockerfile
-    restart: on-failure #Поставил на failure так как сам включается когда не нужно, обычно есть смысл ставить always
+    restart: always
     ports:
       - "8081:80"
     deploy:
@@ -27,7 +36,7 @@ services:
     image: 'postgres:14.0'
     ports:
       - "5040:5432"
-    restart: always #Поставил на failure так как сам включается когда не нужно, обычно есть смысл ставить always
+    restart: always
     deploy:
       mode: replicated
       replicas: 1
