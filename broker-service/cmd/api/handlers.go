@@ -11,11 +11,17 @@ import (
 type RequestPayLoad struct {
 	Action string      `json:"action"`
 	Auth   AuthPayLoad `json:"auth,omitempty"`
+	Log    LogPayLoad  `json:"log,omitempty"`
 }
 
 type AuthPayLoad struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type LogPayLoad struct {
+	Name string `json:"name"`
+	Data string `json:"data"`
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
@@ -41,12 +47,46 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	switch requestPayLoad.Action {
 	case "auth":
 		app.authenticate(w, requestPayLoad.Auth)
-
+	case "log":
+		app.logItem(w, requestPayLoad.Log)
 	default:
 		app.errorJSON(w, errors.New("unknow action"))
 
 	}
 
+}
+
+func (app *Config) logItem(w http.ResponseWriter, entry LogPayLoad) {
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+
+	logServiceURL := "http://logger-service/log"
+
+	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+
+	response, err := client.Do(request)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJSON(w, err)
+		return
+	}
+
+	var payload jsonResponse
+	payload.Error = false
+	payload.Message = "Logged"
+	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayLoad) {
