@@ -48,10 +48,21 @@ func main() {
 	}
 
 	// start web server
-	go app.serve()
+	// go app.serve()
+	log.Println("Starting service on port:", webPort)
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Panic()
+	}
 
 }
 
+/*
 func (app *Config) serve() {
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
@@ -63,6 +74,7 @@ func (app *Config) serve() {
 		log.Panic()
 	}
 }
+*/
 
 // connectToMongo Connects to mongo using const URL and Username and Password that holds inside the func
 func connectToMongo() (*mongo.Client, error) {
@@ -79,6 +91,8 @@ func connectToMongo() (*mongo.Client, error) {
 		log.Println("Error connecting to mongoDB:", err)
 		return nil, err
 	}
+
+	log.Println("Connected to Mongo")
 
 	return c, nil
 }
