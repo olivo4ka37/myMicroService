@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/olivo4ka37/myicroervice/logger-service/data"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -18,6 +21,7 @@ const (
 var client *mongo.Client
 
 type Config struct {
+	Models data.Models
 }
 
 func main() {
@@ -39,6 +43,25 @@ func main() {
 		}
 	}()
 
+	app := Config{
+		Models: data.New(client),
+	}
+
+	// start web server
+	go app.serve()
+
+}
+
+func (app *Config) serve() {
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	err := srv.ListenAndServe()
+	if err != nil {
+		log.Panic()
+	}
 }
 
 // connectToMongo Connects to mongo using const URL and Username and Password that holds inside the func
